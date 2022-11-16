@@ -5,7 +5,7 @@ pub fn gen_args() -> ArgMatches {
         .version("0.0.1")
         .author("Mikhail Ershov (tehnarenok)")
         .subcommand(
-            App::new("compress")
+            App::new("encode")
                 .arg(
                     Arg::new("filename")
                         .long("filename")
@@ -24,7 +24,7 @@ pub fn gen_args() -> ArgMatches {
                 ),
         )
         .subcommand(
-            App::new("decompress")
+            App::new("decode")
                 .arg(
                     Arg::new("filename")
                         .long("filename")

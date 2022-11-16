@@ -3,13 +3,13 @@ fn main() {
     let args = compressor::args::gen_args();
 
     match args.subcommand() {
-        Some(("compress", args)) => {
+        Some(("encode", args)) => {
             let filename = args.value_of("filename").unwrap();
             let out = args.value_of("out").unwrap();
 
             compressor::file::compress(filename, out);
         }
-        Some(("decompress", args)) => {
+        Some(("decode", args)) => {
             let filename = args.value_of("filename").unwrap();
             let out = args.value_of("out").unwrap();
 
