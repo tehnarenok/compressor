@@ -2,7 +2,7 @@ use std::vec;
 
 use super::{build_tree::build_tree, tree::TreeNode};
 
-pub fn code(data: &Vec<usize>) -> (TreeNode, Vec<bool>) {
+pub fn encode(data: &Vec<usize>) -> (TreeNode, Vec<bool>) {
     let tree = build_tree(data);
     let codes = tree.codes();
 

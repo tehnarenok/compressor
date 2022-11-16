@@ -1,3 +1,4 @@
+#[cfg(feature = "full")]
 fn main() {
     let args = compressor::args::gen_args();
 
@@ -18,4 +19,30 @@ fn main() {
             println!("Please use subcommand \"compress\" or \"decompress\"; You can see help (-h)");
         }
     }
+}
+
+#[cfg(feature = "encoder")]
+fn main() {
+    use std::env;
+
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() != 3 {
+        panic!("You need enter input filename and out filename");
+    }
+
+    compressor::file::compress(&args[1], &args[2]);
+}
+
+#[cfg(feature = "decoder")]
+fn main() {
+    use std::env;
+
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() != 3 {
+        panic!("You need enter input filename and out filename");
+    }
+
+    compressor::file::decompress(&args[1], &args[2]);
 }

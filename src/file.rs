@@ -7,7 +7,7 @@ use crate::constants::BWT_SIZE;
 use crate::huffman::decode::decode;
 use crate::huffman::tree::TreeNode;
 use crate::mtf::mtf_reverse;
-use crate::{bwt::bwt, convert_to_bits, convert_to_bytes, huffman::code::code, mtf::mtf};
+use crate::{bwt::bwt, convert_to_bits, convert_to_bytes, huffman::encode::encode, mtf::mtf};
 
 pub fn compress(filename: &str, out: &str) {
     let file = File::open(filename).unwrap();
@@ -29,7 +29,7 @@ pub fn compress(filename: &str, out: &str) {
     }
 
     let input = mtf(data);
-    let coded = code(&input);
+    let coded = encode(&input);
     let serialized = coded.0.serialize();
 
     write_compressed_to_file(

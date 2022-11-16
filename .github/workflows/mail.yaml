@@ -9,11 +9,23 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: cargo build --release --all-features
+      - run: cargo build --release
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: compressor_unix
+          name: compressor_unix_full
+          path: target/release/compressor
+      - run: cargo build --release --features encoder --no-default-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_unix_encoder
+          path: target/release/compressor
+      - run: cargo build --release --features decoder --no-default-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_unix_decoder
           path: target/release/compressor
   
   macos-build:
@@ -23,11 +35,23 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: cargo build --release --all-features
+      - run: cargo build --release
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: compressor_macos
+          name: compressor_macos_full
+          path: target/release/compressor
+      - run: cargo build --release --features encoder --no-default-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_macos_encoder
+          path: target/release/compressor
+      - run: cargo build --release --features decoder --no-default-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_macos_decoder
           path: target/release/compressor
   
   windows-build:
@@ -37,9 +61,21 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: cargo build --release --all-features
+      - run: cargo build --release
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: compressor_windows
+          name: compressor_windows_full
+          path: target/release/compressor.exe
+      - run: cargo build --release --features encoder --no-default-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_windows_encoder
+          path: target/release/compressor.exe
+      - run: cargo build --release --features decoder --no-default-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_windows_decoder
           path: target/release/compressor.exe
