@@ -1,0 +1,45 @@
+name: build
+on: [push]
+
+jobs:
+  unix-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo build --release --all-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_unix
+          path: target/release/compressor
+  
+  macos-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo build --release --all-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_macos
+          path: target/release/compressor
+  
+  windows-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: cargo build --release --all-features
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: compressor_windows
+          path: target/release/compressor.exe
