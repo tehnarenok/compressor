@@ -1,7 +1,9 @@
 use std::fs::File;
 use std::io::{BufReader, Read, Write};
+use std::vec;
 
 use crate::bwt::bwt_reverse;
+use crate::constants::BWT_SIZE;
 use crate::huffman::decode::decode;
 use crate::huffman::tree::TreeNode;
 use crate::mtf::mtf_reverse;
@@ -13,14 +15,29 @@ pub fn compress(filename: &str, out: &str) {
     let mut buffer = Vec::new();
     reader.read_to_end(&mut buffer).unwrap();
 
-    let input = buffer.iter().map(|i| *i as usize).collect();
+    let input: Vec<usize> = buffer.iter().map(|i| *i as usize).collect();
 
-    let bwt_result = bwt(input);
-    let input = mtf(bwt_result.0);
+    let input: Vec<&[usize]> = input.chunks(BWT_SIZE).collect();
+
+    let bwt_results: Vec<(Vec<usize>, usize)> =
+        input.iter().map(|input| bwt(input.to_vec())).collect();
+
+    let mut data: Vec<usize> = vec![];
+
+    for result in &bwt_results {
+        data.append(&mut result.0.clone());
+    }
+
+    let input = mtf(data);
     let coded = code(&input);
     let serialized = coded.0.serialize();
 
-    write_compressed_to_file(serialized, bwt_result.1, coded.1, out);
+    write_compressed_to_file(
+        serialized,
+        bwt_results.iter().map(|result| result.1).collect(),
+        coded.1,
+        out,
+    );
 }
 
 pub fn decompress(filename: &str, out: &str) {
@@ -40,7 +57,7 @@ pub fn decompress(filename: &str, out: &str) {
 
 fn write_compressed_to_file(
     tree: Vec<bool>,
-    bwt_metadata: usize,
+    bwt_metadata: Vec<usize>,
     data: Vec<bool>,
     file_name: &str,
 ) {
@@ -50,9 +67,15 @@ fn write_compressed_to_file(
 
     bits.append(&mut convert_to_bits(tree_len.to_ne_bytes()[..8].to_vec()));
     bits.append(&mut tree.clone());
+
     bits.append(&mut convert_to_bits(
-        bwt_metadata.to_ne_bytes()[..8].to_vec(),
+        bwt_metadata.len().to_ne_bytes()[..8].to_vec(),
     ));
+
+    for bwt in bwt_metadata {
+        bits.append(&mut convert_to_bits(bwt.to_ne_bytes()[..8].to_vec()));
+    }
+
     bits.append(&mut data.clone());
 
     let bytes = convert_to_bytes(bits);
@@ -96,7 +119,26 @@ fn read_compressed(data: &mut Vec<bool>) -> Vec<usize> {
 
     let tree = read_tree(tree_len, data);
 
-    let bwt_metadata = read_bwt_metadata(data);
+    let bwt_len = read_usize(data);
 
-    bwt_reverse((mtf_reverse(decode(tree, data)), bwt_metadata))
+    let mut bwt_metadata: Vec<usize> = vec![];
+
+    for _ in 0..bwt_len {
+        bwt_metadata.push(read_bwt_metadata(data));
+    }
+
+    let output = mtf_reverse(decode(tree, data));
+
+    let output: Vec<&[usize]> = output.chunks(BWT_SIZE).collect();
+
+    let mut out: Vec<usize> = vec![];
+
+    for index in 0..output.len() {
+        out.append(&mut bwt_reverse((
+            output[index].to_vec(),
+            bwt_metadata[index],
+        )));
+    }
+
+    out
 }
