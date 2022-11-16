@@ -40,10 +40,10 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 3 {
-        panic!("You need enter input filename and out filename", false);
+        panic!("You need enter input filename and out filename");
     }
 
-    compressor::file::compress(&args[1], &args[2]);
+    compressor::file::compress(&args[1], &args[2], true);
 }
 
 #[cfg(feature = "decoder")]
