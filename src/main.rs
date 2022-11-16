@@ -40,7 +40,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() != 3 {
-        panic!("You need enter input filename and out filename");
+        panic!("You need enter input filename and out filename", false);
     }
 
     compressor::file::compress(&args[1], &args[2]);
