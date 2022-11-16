@@ -1,6 +1,7 @@
 pub mod args;
 pub mod bwt;
 pub mod constants;
+pub mod entropy;
 pub mod file;
 pub mod huffman;
 pub mod mtf;
