@@ -76,9 +76,15 @@ fn write_compressed_to_file(
         bits.append(&mut convert_to_bits(bwt.to_ne_bytes()[..8].to_vec()));
     }
 
+    let end = 8 - (data.len() + tree.len() % 8) % 8;
+
+    bits.append(&mut convert_to_bits(vec![end as u8]));
+
     bits.append(&mut data.clone());
 
-    let bytes = convert_to_bytes(bits);
+    let bytes = convert_to_bytes(bits.clone());
+
+    assert_eq!(convert_to_bits(bytes.clone())[..bits.len()], bits);
 
     let mut f = File::create(file_name).unwrap();
 
@@ -112,6 +118,16 @@ fn read_bwt_metadata(data: &mut Vec<bool>) -> usize {
     read_usize(data)
 }
 
+fn read_end(data: &mut Vec<bool>) -> usize {
+    let mut bits: Vec<bool> = vec![];
+
+    for _ in 0..8 {
+        bits.push(data.pop().unwrap());
+    }
+
+    convert_to_bytes(bits)[0] as usize
+}
+
 fn read_compressed(data: &mut Vec<bool>) -> Vec<usize> {
     data.reverse();
 
@@ -126,6 +142,16 @@ fn read_compressed(data: &mut Vec<bool>) -> Vec<usize> {
     for _ in 0..bwt_len {
         bwt_metadata.push(read_bwt_metadata(data));
     }
+
+    let end = read_end(data);
+
+    data.reverse();
+
+    for _ in 0..end {
+        data.pop();
+    }
+
+    data.reverse();
 
     let output = mtf_reverse(decode(tree, data));
 

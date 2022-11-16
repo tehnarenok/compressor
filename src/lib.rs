@@ -6,7 +6,14 @@ pub mod huffman;
 pub mod mtf;
 
 fn bits_to_byte(bits: &[bool]) -> u8 {
-    bits.iter()
+    let mut filled_bits = vec![false; 8];
+
+    for index in 0..bits.len() {
+        filled_bits[index] = bits[index];
+    }
+
+    filled_bits
+        .iter()
         .fold(0, |result, &bit| (result << 1) ^ if bit { 1 } else { 0 })
 }
 
