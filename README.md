@@ -5,13 +5,13 @@
 Архивация
 
 ```bash
-compressor compress -f <исходный файл> -o <куда сохранить>
+compressor encode -f <исходный файл> -o <куда сохранить>
 ```
 
 Деархивация
 
 ```bash
-compressor decompress -f <сжатый файл> -o <куда сохранить>
+compressor decode -f <сжатый файл> -o <куда сохранить>
 ```
 
 ## Что внутри:
